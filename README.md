@@ -7,8 +7,26 @@ Open the folder **PROJECT1** in VScode.
 
 Create a new terminal, then enter the command line in the terminal:
 ``` 
+cd .\Lib_EmotionFerPlus\
+``` 
+
+```
+dotnet pack
+```
+
+``` 
+cd ..
+```
+
+``` 
+dotnet build
+```
+
+
+```
 cd .\app\
 ```
+
 ``` 
 dotnet run
 ```
