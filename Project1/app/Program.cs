@@ -19,15 +19,30 @@ class program
     } ;
     static async Task  Main(string []args)
     {   
+       string []results;
         Console.WriteLine("Application started.");
+
         try
         {   
-           await EmotionFerPlus.EmotionalAnalysisAsync(images,cancel_Task);
+          results=await EmotionFerPlus.EmotionalAnalysisAsync(images,cancel_Task);
+
+          int i=0;
+          foreach(var str in results)
+          { 
+             if(!cancel_Task[i])
+                System.Console.WriteLine($"{images[i]}'s result of the analysis:");
+            System.Console.WriteLine(str); 
+            i++;
+          }     
         }
         catch (TaskCanceledException)
         {
             Console.WriteLine("Task was cancelled");
         }
-        Console.WriteLine("Application ending.");
+        finally
+        {
+           
+             Console.WriteLine("Application ending.");
+        }
     }
 }
