@@ -5,7 +5,8 @@ The first lab assignment for .Net in the 7-th semester
 ### **Usage**
 Download code folder,open the folder **PROJECT1** in VScode. 
 
-Create a new terminal, then enter the command line in the terminal:
+Create a new terminal, then enter the command line in the terminal.  
+
 First need to compile the library.
 ``` 
 dotnet build
