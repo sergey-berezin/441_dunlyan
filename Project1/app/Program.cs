@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
 using EmotionFer_Plus;
 class program 
-{   
+{     
+   static object l= new object();
     static readonly string [] images=
     {
             "images/happyness.png",  
@@ -15,16 +16,16 @@ class program
         false,      // Если true то отменить задачу , иначе выполнить задачу
         false,
         true,
-        true
+        false
     } ;
     static async Task ResultsAsync(EmotionFerPlus Emotion,string img_address,CancellationTokenSource cts)
     {
          var image=await File.ReadAllBytesAsync(img_address);
          var result=await Emotion.EmotionalAnalysisAsync(image,cts);
          await Task.Factory.StartNew(()=> 
-         { 
-            lock(new object()) 
-            {
+         {  
+            lock(l) 
+            {   
                 System.Console.WriteLine($"the result of analys {img_address}: ");
                 foreach(var item in result) 
                 {   

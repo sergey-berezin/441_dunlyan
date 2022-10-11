@@ -13,41 +13,42 @@ namespace EmotionFer_Plus{
        {
          this.session = new InferenceSession("../Lib_EmotionFerPlus/emotion-ferplus-7.onnx");
        }
-       public  async Task<IEnumerable<(string,double)>> EmotionalAnalysisAsync(byte [] image,CancellationTokenSource cts)
+       public  async Task<List<(string, double)>> EmotionalAnalysisAsync(byte [] image,CancellationTokenSource cts)
        {     
-            var result=new List<(string,double)>();
+            List<(string,double)> result=new List<(string,double)>();
             var _Stream = new MemoryStream(image);
             Image<Rgb24> _image;
             _image = await Image.LoadAsync<Rgb24>(_Stream,cts.Token);
             if (cts.IsCancellationRequested)
-                return result;
+                return  result;
 
              _image.Mutate(ctx => {
                     ctx.Resize(new Size(64,64));
              });
             if (cts.IsCancellationRequested)
-                return result;
-            await Task.Factory.StartNew(() =>
-            {
+                 return result ;
+            await Task<List<(string, double)>>.Factory.StartNew(() =>
+            {   
                 var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("Input3", GrayscaleImageToTensor(_image)) };
                 IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results;
                 Monitor.Enter(session);
                 try
                 {
                     results = session.Run(inputs);
-                    var emotions =EmotionFerPlus.Softmax(results.First(v => v.Name == "Plus692_Output_0").AsEnumerable<float>().ToArray());
-                    string[] keys = { "neutral", "happiness", "surprise", "sadness", "anger", "disgust", "fear", "contempt" };
-                    foreach(var i in keys.Zip(emotions))
-                    {
-                        result.Add(i);
-                    }
                 }
                 finally
                 {
                     Monitor.Exit(session); 
                 }
-            },TaskCreationOptions.LongRunning);
-           return result;
+                var emotions =EmotionFerPlus.Softmax(results.First(v => v.Name == "Plus692_Output_0").AsEnumerable<float>().ToArray());
+                string[] keys = { "neutral", "happiness", "surprise", "sadness", "anger", "disgust", "fear", "contempt" };
+                foreach(var i in keys.Zip(emotions))
+                {
+                   result.Add(i);
+                }
+                return result;
+            },cts.Token,TaskCreationOptions.LongRunning,TaskScheduler.Default);
+            return result;
        }
         public  DenseTensor<float> GrayscaleImageToTensor(Image<Rgb24> img)
         {

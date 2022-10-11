@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Yuan.EmotionFer" Version="1.1.4" />
+    <PackageReference Include="Yuan.EmotionFer" Version="1.1.6" />
   </ItemGroup>
 
 
