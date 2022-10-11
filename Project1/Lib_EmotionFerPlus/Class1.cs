@@ -6,62 +6,50 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
 namespace EmotionFer_Plus{
-    public static class EmotionFerPlus
+    public  class EmotionFerPlus
     {       
-       public static async Task<string[]> EmotionalAnalysisAsync(string [] images,bool [] cancel_Task)
-       {    
-            string[] analys_Results=new string [images.Length];
-            using var session = new InferenceSession("../Lib_EmotionFerPlus/emotion-ferplus-7.onnx");  
-            //CancellationTokenSource используется для подачи сигнала CancellationToken на запрос отмены.
-            foreach(var kv in session.InputMetadata)
-            Console.WriteLine($"{kv.Key}: {EmotionFerPlus.MetadataToString(kv.Value)}");
-            foreach(var kv in session.OutputMetadata)
-            Console.WriteLine($"{kv.Key}: {EmotionFerPlus.MetadataToString(kv.Value)}]");
-            int i=0;
-            foreach (var str in images)
-            {   
-               CancellationTokenSource cts = new  CancellationTokenSource(); 
-               analys_Results[i]= await ProcessAsync(session,str,cts,cts.Token,cancel_Task[i++]);
-            }
-            return analys_Results;
+       public InferenceSession session;
+       public EmotionFerPlus()
+       {
+         this.session = new InferenceSession("../Lib_EmotionFerPlus/emotion-ferplus-7.onnx");
        }
-        public static async Task<string> ProcessAsync(InferenceSession session,string str,CancellationTokenSource cts,CancellationToken token,bool cancel_Task)
-        {   
+       public  async Task<IEnumerable<(string,double)>> EmotionalAnalysisAsync(byte [] image,CancellationTokenSource cts)
+       {     
+            var result=new List<(string,double)>();
+            var _Stream = new MemoryStream(image);
+            Image<Rgb24> _image;
+            _image = await Image.LoadAsync<Rgb24>(_Stream,cts.Token);
+            if (cts.IsCancellationRequested)
+                return result;
 
-            string str1="";
-            if(cancel_Task)
-              cts.Cancel();
-            if (token.IsCancellationRequested) 
-            {
-               return str1 =$"The task '{str} ' was canceled!";
-            }   
-            else{
-                    await Task.Run(()=> {       
-                    using Image<Rgb24> image = Image.Load<Rgb24>(str);
-                    image.Mutate(ctx => {
+             _image.Mutate(ctx => {
                     ctx.Resize(new Size(64,64));
-                    });
-                    var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("Input3", GrayscaleImageToTensor(image)) };
-                    IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results;
-                    Monitor.Enter(session);
-                    try
-                    {
-                        results = session.Run(inputs);
-                    }
-                    finally
-                    {
-                        Monitor.Exit(session);
-                    }
+             });
+            if (cts.IsCancellationRequested)
+                return result;
+            await Task.Factory.StartNew(() =>
+            {
+                var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("Input3", GrayscaleImageToTensor(_image)) };
+                IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results;
+                Monitor.Enter(session);
+                try
+                {
+                    results = session.Run(inputs);
                     var emotions =EmotionFerPlus.Softmax(results.First(v => v.Name == "Plus692_Output_0").AsEnumerable<float>().ToArray());
                     string[] keys = { "neutral", "happiness", "surprise", "sadness", "anger", "disgust", "fear", "contempt" };
-                   
                     foreach(var i in keys.Zip(emotions))
-                    str1+=$"{i.First}: {i.Second}\n";
-                    });
-              return str1; 
-            }            
-        }
-        public static DenseTensor<float> GrayscaleImageToTensor(Image<Rgb24> img)
+                    {
+                        result.Add(i);
+                    }
+                }
+                finally
+                {
+                    Monitor.Exit(session); 
+                }
+            },TaskCreationOptions.LongRunning);
+           return result;
+       }
+        public  DenseTensor<float> GrayscaleImageToTensor(Image<Rgb24> img)
         {
             var w = img.Width;
             var h = img.Height;
@@ -78,10 +66,9 @@ namespace EmotionFer_Plus{
                 }
                 }
             });
-    
             return t;
         }
-        public static string MetadataToString(NodeMetadata metadata)
+        public  string MetadataToString(NodeMetadata metadata)
         => $"{metadata.ElementType}[{String.Join(",", metadata.Dimensions.Select(i => i.ToString()))}]";
         public static float[] Softmax(float[] z)
         {
