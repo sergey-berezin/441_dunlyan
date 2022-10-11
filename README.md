@@ -1,32 +1,33 @@
 ## <center> Lab1 </center>
  
 ### **Introduction**
-Это первое задание на практикум 7-семестра
+The first lab assignment for .Net in the 7-th semester
 ### **Usage**
-Open the folder **PROJECT1** in VScode. 
+Download code folder,open the folder **PROJECT1** in VScode. 
 
-Create a new terminal, then enter the command line in the terminal:
-``` 
-cd .\Lib_EmotionFerPlus\
-``` 
+Create a new terminal, then enter the command line in the terminal.  
 
-```
-dotnet pack
-```
-
-``` 
-cd ..
-```
-
+First need to compile the library.
 ``` 
 dotnet build
 ```
-
-
+Then go to the library folder.
+``` 
+cd .\Lib_EmotionFerPlus\
+``` 
+Execute the package command.
+```
+dotnet pack
+```
+Return to previous directory.
+``` 
+cd ..
+```
+Go to application directory.
 ```
 cd .\app\
 ```
-
+Run this program.
 ``` 
 dotnet run
 ```
