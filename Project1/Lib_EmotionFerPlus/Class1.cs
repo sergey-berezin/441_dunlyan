@@ -11,7 +11,10 @@ namespace EmotionFer_Plus{
        public InferenceSession session;
        public EmotionFerPlus()
        {
-         this.session = new InferenceSession("../Lib_EmotionFerPlus/emotion-ferplus-7.onnx");
+            using var modelStream = typeof(EmotionFerPlus).Assembly.GetManifestResourceStream("EmotionsLib.emotion-ferplus-7.onnx");
+            using var memoryStream = new MemoryStream();
+            modelStream.CopyTo(memoryStream);
+            this.session = new InferenceSession(memoryStream.ToArray());
        }
        public  async Task<List<(string, double)>> EmotionalAnalysisAsync(byte [] image,CancellationTokenSource cts)
        {     
