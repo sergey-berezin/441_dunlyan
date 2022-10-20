@@ -39,7 +39,7 @@ The second lab assignment for .Net in the 7-th semester.
 Project 2 needs to use the package created by Project 1  
 * **Environment**:
     * **OS : Windows 11**
-    * **Software Environment : Visual studio 2022**  
+    * **Software Environment : Visual Studio 2022**  
 #### **How to add assembly references**
 
     
