@@ -5,12 +5,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-     <RestoreSources>..\Lib_EmotionFerPlus\bin;  
+     <RestoreSources>..\Lib_EmotionFerPlus\bin\debug;  
      </RestoreSources>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Yuan.EmotionFer" Version="1.1.6" />
+    <PackageReference Include="Yuan.EmotionFer" Version="2.0.5" />
   </ItemGroup>
 
 
