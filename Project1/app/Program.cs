@@ -13,10 +13,10 @@ class program
     
     static bool [] cancel_Task=
     {
-        true,      // Если true то отменить задачу , иначе выполнить задачу
+        false,      // Если true то отменить задачу , иначе выполнить задачу
+        false,
+        false,
         true,
-        false,
-        false,
     } ;
     static async Task ResultsAsync(EmotionFerPlus Emotion,string img_address,CancellationTokenSource cts)
     {

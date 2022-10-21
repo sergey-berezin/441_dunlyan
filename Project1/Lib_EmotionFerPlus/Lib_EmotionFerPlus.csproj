@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Yuan.EmotionFer</PackageId>
-    <Version>1.1.6</Version>
+    <Version>2.0.5</Version>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -12,7 +12,9 @@
   </ItemGroup>
   
   <ItemGroup>
-    <EmbeddedResource Include="emotion-ferplus-7.onnx"/>
+    <EmbeddedResource Include="emotion-ferplus-7.onnx">
+    <LogicalName>emotion.onnx</LogicalName>
+     </EmbeddedResource>
   </ItemGroup>
 
 

@@ -4,6 +4,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Threading.Tasks.Dataflow;
 
 namespace EmotionFer_Plus{
     public  class EmotionFerPlus
@@ -11,27 +12,25 @@ namespace EmotionFer_Plus{
        public InferenceSession session;
        public EmotionFerPlus()
        {
-            using var modelStream = typeof(EmotionFerPlus).Assembly.GetManifestResourceStream("EmotionsLib.emotion-ferplus-7.onnx");
+            using var modelStream = typeof(EmotionFerPlus).Assembly.GetManifestResourceStream("emotion.onnx");
             using var memoryStream = new MemoryStream();
-            modelStream.CopyTo(memoryStream);
+            if (modelStream != null)
+                modelStream.CopyTo(memoryStream);
             this.session = new InferenceSession(memoryStream.ToArray());
        }
        public  async Task<List<(string, double)>> EmotionalAnalysisAsync(byte [] image,CancellationTokenSource cts)
        {     
             List<(string,double)> result=new List<(string,double)>();
-            var _Stream = new MemoryStream(image);
-            Image<Rgb24> _image;
-            _image = await Image.LoadAsync<Rgb24>(_Stream,cts.Token);
-            if (cts.IsCancellationRequested)
-                return  result;
-
-             _image.Mutate(ctx => {
-                    ctx.Resize(new Size(64,64));
-             });
-            if (cts.IsCancellationRequested)
-                 return result ;
+           
+        
             await Task<List<(string, double)>>.Factory.StartNew(() =>
             {   
+                 var _Stream = new MemoryStream(image);
+                Image<Rgb24> _image=Image.Load<Rgb24>(_Stream);
+        
+                _image.Mutate(ctx => {
+                    ctx.Resize(new Size(64,64));
+                });
                 var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("Input3", GrayscaleImageToTensor(_image)) };
                 IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results;
                 Monitor.Enter(session);
