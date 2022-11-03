@@ -172,7 +172,7 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
         ```
     
 ####  **How to view tables in the database**
-* In Visual Studio Code
-    Install plugin **SQLite** (v0.14.1) in vscode   
-####  **Program example and some references** 
+* In **Visual Studio Code**  
+  * Install plugin **SQLite** (v0.14.1)   
+####  **Program example and some references**   
   * https://learn.microsoft.com/ru-ru/ef/core/get-started/overview/first-app?tabs=visual-studio
