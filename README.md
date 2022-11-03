@@ -12,7 +12,7 @@
       - [**Persistent storage technology used**](#persistent-storage-technology-used)
       - [**How to install the necessary plugins for this project**](#how-to-install-the-necessary-plugins-for-this-project)
       - [**How to view tables in the database**](#how-to-view-tables-in-the-database)
-      - [**Program example and some references**](#program-example-and-some-references)
+    - [**Program example and some references**](#program-example-and-some-references)
 # Lab work .NET technology in 7th semester
 
 
@@ -76,7 +76,6 @@ Project 2 needs to use the package created by Project 1
  
 
  
-<img src="https://github.com/YUAN-DL/Images/blob/master/Images/lenovo20221020172518.png" height=70% width=70% >
 
 **2.**  
  NuGet Package Manager->Package Sources.  
@@ -85,7 +84,7 @@ Project 2 needs to use the package created by Project 1
 
 <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/lenovo20221020173040.png" height=70% width=70% >  
 
-<img src="https://github.com/YUAN-DL/Images/blob/master/Images/lenovo20221020173040.png" height=70% width=70% >  
+
 
 
 **3.**  
@@ -95,7 +94,7 @@ Project 2 needs to use the package created by Project 1
 
 <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/lenovo20221020173114.png" height=70% width=70% >  
 
-<img src="https://github.com/YUAN-DL/Images/blob/master/Images/lenovo20221020173114.png" height=70% width=70% >  
+
 
 
 **4.**  
@@ -104,8 +103,7 @@ Project 2 needs to use the package created by Project 1
 
 <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/lenovo20221020173203.png" height=70% width=70% >  
 
-<img src="https://github.com/YUAN-DL/Images/blob/master/Images/lenovo20221020173203.png" height=70% width=70% >  
-
+ 
 
 
 **5.**    
@@ -114,7 +112,6 @@ Click the update button.
 
 <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/lenovo20221020173238.png" height=70% width=70% >  
 
-<img src="https://github.com/YUAN-DL/Images/blob/master/Images/lenovo20221020173238.png" height=70% width=70% >  
 
 
 **6.**  
@@ -123,7 +120,6 @@ After updating the assembly source, we can open the nuget package manager to ins
 
 <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/lenovo20221020173310.png" height=70% width=70% >  
 
-<img src="https://github.com/YUAN-DL/Images/blob/master/Images/lenovo20221020173310.png" height=70% width=70% >  
 
 
 **7.**  
@@ -174,5 +170,16 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
 ####  **How to view tables in the database**
 * In **Visual Studio Code**  
   * Install plugin **SQLite** (v0.14.1)   
-####  **Program example and some references**   
-  * https://learn.microsoft.com/ru-ru/ef/core/get-started/overview/first-app?tabs=visual-studio
+###  **Program example and some references**  
+
+ * **What is Normalization in DBMS (SQL)? 1NF, 2NF, 3NF Example**  
+     https://www.guru99.com/database-normalization.html
+
+ * **How to create a database**  
+     https://learn.microsoft.com/ru-ru/ef/core/get-started/overview/first-app?tabs=visual-studio
+     
+ * **How to get the hash code of byte[] type data**   
+     https://learn.microsoft.com/ru-ru/dotnet/api/system.object.gethashcode?view=net-6.0
+
+
+ 
