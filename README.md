@@ -179,7 +179,11 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
      https://learn.microsoft.com/ru-ru/ef/core/get-started/overview/first-app?tabs=visual-studio
      
  * **How to get the hash code of byte[] type data**   
+<<<<<<< Updated upstream
      https://learn.microsoft.com/ru-ru/dotnet/api/system.object.gethashcode?view=net-6.0
 
 
  
+=======
+     https://learn.microsoft.com/ru-ru/dotnet/api/system.object.gethashcode?view=net-6.0
+>>>>>>> Stashed changes

@@ -21,7 +21,7 @@ class program
     static async Task ResultsAsync(EmotionFerPlus Emotion,string img_address,CancellationTokenSource cts)
     {
          var image=await File.ReadAllBytesAsync(img_address);
-         var result=await Emotion.EmotionalAnalysisAsync(image,cts);
+         var result=await Emotion.EmotionalAnalysisAsync(image,cts.Token);
          await Task.Factory.StartNew(()=> 
          {  
             lock(l) 
