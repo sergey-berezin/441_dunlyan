@@ -68,18 +68,20 @@ namespace WpfClient
 
         public async void load() //load image and result from server
         {
-            await _asyncRetryPolicy.ExecuteAsync(async () =>
+            try
             {
-                var httpclient = new HttpClient();
-                httpclient.BaseAddress = new Uri("https://localhost:7285/");
-                httpclient.DefaultRequestHeaders.Accept.Clear();
-                httpclient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpResponseMessage response_load = await httpclient.GetAsync("api/Images/AllImages");
-               
+                await _asyncRetryPolicy.ExecuteAsync(async () =>
+                {
+                    var httpclient = new HttpClient();
+                    httpclient.BaseAddress = new Uri("https://localhost:7285/");
+                    httpclient.DefaultRequestHeaders.Accept.Clear();
+                    httpclient.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage response_load = await httpclient.GetAsync("api/Images/AllImages");
+
                     response_load.EnsureSuccessStatusCode();
-                
-               
+
+
                     //List < (string, double) > res = await response.Content.ReadFromJsonAsync<List<(string, double)>>();
                     // var res = response.Content.ReadAsHttpRequestMessageAsync();
                     List<byte[]> values = await response_load.Content.ReadFromJsonAsync<List<byte[]>>();
@@ -88,20 +90,30 @@ namespace WpfClient
 
                         images_Analysis.Add(new ImageInfo { imageDataByte = item });
                     }
-                
-                HttpResponseMessage response1_load = await httpclient.GetAsync("api/Images/AllResults");
-                
+
+                    HttpResponseMessage response1_load = await httpclient.GetAsync("api/Images/AllResults");
+
                     response1_load.EnsureSuccessStatusCode();
-                
+
                     List<string> values1 = await response1_load.Content.ReadFromJsonAsync<List<string>>();
                     for (int i = 0; i < values1.Count; i++)
                     {
                         images_Analysis[i].result = values1[i];
                     }
                     //
-                
-                emotionClassification();
-            });
+
+                    emotionClassification();
+                });
+            }
+            catch(Exception ex)
+            {
+
+            }
+            finally
+            {
+
+            }
+            
         }
         private void btn_Open_Click(object sender, RoutedEventArgs e)
         {
@@ -151,64 +163,63 @@ namespace WpfClient
                 can_Clear = true;
             }
             else
-            {
-                await _asyncRetryPolicy.ExecuteAsync(async () =>
+            {   
+                try
+                {
+                    await _asyncRetryPolicy.ExecuteAsync(async () =>
+                    {
+
+                          ProgressBar_1.Visibility = Visibility.Visible;
+
+                            analysis_Progress.Visibility = Visibility.Visible;
+                            var httpclient = new HttpClient();
+                            httpclient.BaseAddress = new Uri("https://localhost:7285/");
+                            httpclient.DefaultRequestHeaders.Accept.Clear();
+                            httpclient.DefaultRequestHeaders.Accept.Add(
+                            new MediaTypeWithQualityHeaderValue("application/json"));
+                            _Image img = new _Image();
+                            for (int i = 0; i < images_Analysis.Count; i++)
+                            {
+
+                                if (images_Analysis[i].result == "" || images_Analysis[i].result == null)
+                                {
+                                    //var byte_img = File.ReadAllBytes(images_Analysis[i].imagePath);
+                                    img.byte_image = images_Analysis[i].imageDataByte;
+
+                                    HttpResponseMessage response = await HttpClientJsonExtensions.PostAsJsonAsync(httpclient, "api/Images", img, cts.Token);
+
+                                    response.EnsureSuccessStatusCode();
+
+
+
+                                    //List < (string, double) > res = await response.Content.ReadFromJsonAsync<List<(string, double)>>();
+                                    // var res = response.Content.ReadAsHttpRequestMessageAsync();
+                                    images_Analysis[i].result = await response.Content.ReadFromJsonAsync<string>();
+
+
+
+
+                                }
+                                ProgressBar_1.Value += 1;
+                            }
+
+                        
+                  
+                    });
+
+                }
+                catch(Exception ex)
                 {
 
-                    try
-
-                    {
-                        ProgressBar_1.Visibility = Visibility.Visible;
-
-                        analysis_Progress.Visibility = Visibility.Visible;
-                        var httpclient = new HttpClient();
-                        httpclient.BaseAddress = new Uri("https://localhost:7285/");
-                        httpclient.DefaultRequestHeaders.Accept.Clear();
-                        httpclient.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("application/json"));
-                        _Image img = new _Image();
-                        for (int i = 0; i < images_Analysis.Count; i++)
-                        {
-
-                            if (images_Analysis[i].result == "" || images_Analysis[i].result == null)
-                            {
-                                //var byte_img = File.ReadAllBytes(images_Analysis[i].imagePath);
-                                img.byte_image = images_Analysis[i].imageDataByte;
-
-                                HttpResponseMessage response = await HttpClientJsonExtensions.PostAsJsonAsync(httpclient, "api/Images", img, cts.Token);
-
-                                response.EnsureSuccessStatusCode();
-
-
-
-                                //List < (string, double) > res = await response.Content.ReadFromJsonAsync<List<(string, double)>>();
-                                // var res = response.Content.ReadAsHttpRequestMessageAsync();
-                                images_Analysis[i].result = await response.Content.ReadFromJsonAsync<string>();
-
-
-
-
-                            }
-                            ProgressBar_1.Value += 1;
-                        }
-
-                    }
-                    catch (TaskCanceledException)
-                    {
-
-                        MessageBox.Show("Task was cancelled!");
-                        emotionClassification();
-
-                    }
-                    finally
-                    {
-                        emotionClassification();
-                    }
-
+                }
+                finally
+                {
+                    emotionClassification();
                     Cancel = false;
                     can_Clear = true;
                     can_delete = true;
-                });
+                }
+                
             }
 
             }
@@ -502,7 +513,8 @@ namespace WpfClient
                 }
                 else
                 {
-
+                try
+                {
                     if (System.Windows.MessageBox.Show("This operation will delete all images and clear all data in the database", "Warning：", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
                         images_Analysis.Clear();
@@ -522,18 +534,29 @@ namespace WpfClient
                         list_View_disgust.ItemsSource = arr_disgust;
                         list_View_fear.ItemsSource = arr_fear;
                         list_View_contempt.ItemsSource = arr_contempt;
-                    await _asyncRetryPolicy.ExecuteAsync(async () =>
-                    {
-                        var httpclient = new HttpClient();
-                        httpclient.BaseAddress = new Uri("https://localhost:7285/");
-                        httpclient.DefaultRequestHeaders.Accept.Clear();
-                        httpclient.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("application/json"));
-                        HttpResponseMessage response = await httpclient.DeleteAsync("/api/Images/All");
-                        response.EnsureSuccessStatusCode();
-                          
-                    });
+
+                        await _asyncRetryPolicy.ExecuteAsync(async () =>
+                        {
+                            var httpclient = new HttpClient();
+                            httpclient.BaseAddress = new Uri("https://localhost:7285/");
+                            httpclient.DefaultRequestHeaders.Accept.Clear();
+                            httpclient.DefaultRequestHeaders.Accept.Add(
+                            new MediaTypeWithQualityHeaderValue("application/json"));
+                            HttpResponseMessage response = await httpclient.DeleteAsync("/api/Images/All");
+                            response.EnsureSuccessStatusCode();
+
+                        });
                     }
+                }
+                    
+                catch(Exception ex)
+                {
+
+                }
+                finally
+                {
+
+                }
                 }
            
                
