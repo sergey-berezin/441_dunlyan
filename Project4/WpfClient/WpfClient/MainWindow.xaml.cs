@@ -22,14 +22,17 @@ using System.IO;
 using System.Threading;
 using CancellationTokenSource = System.Threading.CancellationTokenSource;
 using System.Threading.Channels;
-
+using Polly;
+using Polly.Retry;
 namespace WpfClient
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {
+    {   
+        private readonly AsyncRetryPolicy _asyncRetryPolicy;
+        private int Max_Retries=4;
         private bool Cancel = false;
         private bool can_Clear = true;
         private bool can_delete = true;
@@ -46,6 +49,7 @@ namespace WpfClient
         private ObservableCollection<byte[]> arr_contempt = new ObservableCollection<byte[]>();
         public  MainWindow()
         {
+            _asyncRetryPolicy = Policy.Handle<HttpRequestException>().WaitAndRetryAsync(Max_Retries, times => TimeSpan.FromMilliseconds(times*300));
             InitializeComponent();
             load(); 
             list_View.ItemsSource = images_Analysis;
@@ -64,51 +68,40 @@ namespace WpfClient
 
         public async void load() //load image and result from server
         {
-            var httpclient = new HttpClient();
-            httpclient.BaseAddress = new Uri("https://localhost:7285/");
-            httpclient.DefaultRequestHeaders.Accept.Clear();
-            httpclient.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpResponseMessage response_load = await httpclient.GetAsync("api/Images/AllImages");
-            try
+            await _asyncRetryPolicy.ExecuteAsync(async () =>
             {
-                response_load.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException HRex)
-            {
+                var httpclient = new HttpClient();
+                httpclient.BaseAddress = new Uri("https://localhost:7285/");
+                httpclient.DefaultRequestHeaders.Accept.Clear();
+                httpclient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response_load = await httpclient.GetAsync("api/Images/AllImages");
                
-            }
-            finally
-            {
-                //List < (string, double) > res = await response.Content.ReadFromJsonAsync<List<(string, double)>>();
-                // var res = response.Content.ReadAsHttpRequestMessageAsync();
-                List<byte[]> values = await response_load.Content.ReadFromJsonAsync<List<byte[]>>();
-                foreach(var item in values)
-                {
-                 
-                    images_Analysis.Add(new ImageInfo { imageDataByte = item});
-                }
-            }
-            HttpResponseMessage response1_load = await httpclient.GetAsync("api/Images/AllResults");
-            try
-            {
-                response1_load.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException HRex)
-            {
+                    response_load.EnsureSuccessStatusCode();
                 
-            }
-            finally
-            {
-       
-                List<string> values = await response1_load.Content.ReadFromJsonAsync<List<string>>();
-                for (int i= 0; i < values.Count;i++)
-                {
-                    images_Analysis[i].result = values[i];
-                }
-                //
-            }
-            emotionClassification();
+               
+                    //List < (string, double) > res = await response.Content.ReadFromJsonAsync<List<(string, double)>>();
+                    // var res = response.Content.ReadAsHttpRequestMessageAsync();
+                    List<byte[]> values = await response_load.Content.ReadFromJsonAsync<List<byte[]>>();
+                    foreach (var item in values)
+                    {
+
+                        images_Analysis.Add(new ImageInfo { imageDataByte = item });
+                    }
+                
+                HttpResponseMessage response1_load = await httpclient.GetAsync("api/Images/AllResults");
+                
+                    response1_load.EnsureSuccessStatusCode();
+                
+                    List<string> values1 = await response1_load.Content.ReadFromJsonAsync<List<string>>();
+                    for (int i = 0; i < values1.Count; i++)
+                    {
+                        images_Analysis[i].result = values1[i];
+                    }
+                    //
+                
+                emotionClassification();
+            });
         }
         private void btn_Open_Click(object sender, RoutedEventArgs e)
         {
@@ -159,68 +152,66 @@ namespace WpfClient
             }
             else
             {
-               
-                try
-
+                await _asyncRetryPolicy.ExecuteAsync(async () =>
                 {
-                    ProgressBar_1.Visibility = Visibility.Visible;
 
-                    analysis_Progress.Visibility = Visibility.Visible;
-                    var httpclient = new HttpClient();
-                    httpclient.BaseAddress = new Uri("https://localhost:7285/");
-                    httpclient.DefaultRequestHeaders.Accept.Clear();
-                    httpclient.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/json"));
-                    _Image img = new _Image();
-                    for (int i = 0; i < images_Analysis.Count; i++)
+                    try
+
                     {
+                        ProgressBar_1.Visibility = Visibility.Visible;
 
-                        if (images_Analysis[i].result==""|| images_Analysis[i].result ==null)
+                        analysis_Progress.Visibility = Visibility.Visible;
+                        var httpclient = new HttpClient();
+                        httpclient.BaseAddress = new Uri("https://localhost:7285/");
+                        httpclient.DefaultRequestHeaders.Accept.Clear();
+                        httpclient.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/json"));
+                        _Image img = new _Image();
+                        for (int i = 0; i < images_Analysis.Count; i++)
                         {
-                            //var byte_img = File.ReadAllBytes(images_Analysis[i].imagePath);
-                            img.byte_image = images_Analysis[i].imageDataByte;
 
-                            HttpResponseMessage response = await HttpClientJsonExtensions.PostAsJsonAsync(httpclient, "api/Images", img, cts.Token);
-                            try
+                            if (images_Analysis[i].result == "" || images_Analysis[i].result == null)
                             {
+                                //var byte_img = File.ReadAllBytes(images_Analysis[i].imagePath);
+                                img.byte_image = images_Analysis[i].imageDataByte;
+
+                                HttpResponseMessage response = await HttpClientJsonExtensions.PostAsJsonAsync(httpclient, "api/Images", img, cts.Token);
+
                                 response.EnsureSuccessStatusCode();
-                            }
-                            catch (HttpRequestException HRex)
-                            {
 
-                            }
-                            finally
-                            {
+
+
                                 //List < (string, double) > res = await response.Content.ReadFromJsonAsync<List<(string, double)>>();
                                 // var res = response.Content.ReadAsHttpRequestMessageAsync();
                                 images_Analysis[i].result = await response.Content.ReadFromJsonAsync<string>();
 
+
+
+
                             }
-
-                           
+                            ProgressBar_1.Value += 1;
                         }
-                        ProgressBar_1.Value += 1;
+
                     }
-                    
-                }
-                catch (TaskCanceledException)
-                {
+                    catch (TaskCanceledException)
+                    {
 
-                    MessageBox.Show("Task was cancelled!");
-                    emotionClassification();
+                        MessageBox.Show("Task was cancelled!");
+                        emotionClassification();
 
-                }
-                finally 
-                {
-                    emotionClassification();
-                }
-               
-                Cancel = false;
-                can_Clear = true;
-                can_delete = true;
+                    }
+                    finally
+                    {
+                        emotionClassification();
+                    }
+
+                    Cancel = false;
+                    can_Clear = true;
+                    can_delete = true;
+                });
             }
 
-        }
+            }
         public async Task emotionClassification()
         {
             var httpclient = new HttpClient();
@@ -228,251 +219,256 @@ namespace WpfClient
             httpclient.DefaultRequestHeaders.Accept.Clear();
             httpclient.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpResponseMessage response = await httpclient.GetAsync("api/Images?Emotion=happiness");
-            HttpResponseMessage response1 = await httpclient.GetAsync("api/Images?Emotion=neutral");
-            HttpResponseMessage response2 = await httpclient.GetAsync("api/Images?Emotion=sadness");
-            HttpResponseMessage response3 = await httpclient.GetAsync("api/Images?Emotion=contempt");
-            HttpResponseMessage response4 = await httpclient.GetAsync("api/Images?Emotion=surprise");
-            HttpResponseMessage response5 = await httpclient.GetAsync("api/Images?Emotion=anger");
-            HttpResponseMessage response6 = await httpclient.GetAsync("api/Images?Emotion=disgust");
-            HttpResponseMessage response7 = await httpclient.GetAsync("api/Images?Emotion=fear");
-            try
-            {
-                response7.EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
+
+            await _asyncRetryPolicy.ExecuteAsync(async () =>
             {
 
-            }
-            finally
-            {
-                List<byte[]> lis_Imgfear = await response7.Content.ReadFromJsonAsync<List<byte[]>>();
-
-                // Box1.Text += lis_Img._ImageId;
-
-                foreach (var item in lis_Imgfear)
+                HttpResponseMessage response = await httpclient.GetAsync("api/Images?Emotion=happiness");
+                HttpResponseMessage response1 = await httpclient.GetAsync("api/Images?Emotion=neutral");
+                HttpResponseMessage response2 = await httpclient.GetAsync("api/Images?Emotion=sadness");
+                HttpResponseMessage response3 = await httpclient.GetAsync("api/Images?Emotion=contempt");
+                HttpResponseMessage response4 = await httpclient.GetAsync("api/Images?Emotion=surprise");
+                HttpResponseMessage response5 = await httpclient.GetAsync("api/Images?Emotion=anger");
+                HttpResponseMessage response6 = await httpclient.GetAsync("api/Images?Emotion=disgust");
+                HttpResponseMessage response7 = await httpclient.GetAsync("api/Images?Emotion=fear");
+                try
                 {
-                   /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                    var decoder = BitmapDecoder.Create(ms,
-                    BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                    IntPtr hBitmap = bmp.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                    // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                    // im.Source = WpfBitmap;
-                    arr_fear.Add(item);
+                    response7.EnsureSuccessStatusCode();
                 }
-            }
-            try
-            {
-                response6.EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                List<byte[]> lis_Imgdisgust = await response6.Content.ReadFromJsonAsync<List<byte[]>>();
-
-                // Box1.Text += lis_Img._ImageId;
-
-                foreach (var item in lis_Imgdisgust)
+                catch (Exception ex)
                 {
-                   /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                    var decoder = BitmapDecoder.Create(ms,
-                    BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
 
-                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                    IntPtr hBitmap = bmp.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                    // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                    // im.Source = WpfBitmap;
-                    arr_disgust.Add(item);
                 }
-            }
-            try
-            {
-                response5.EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                List<byte[]> lis_Imgsanger = await response5.Content.ReadFromJsonAsync<List<byte[]>>();
-
-                // Box1.Text += lis_Img._ImageId;
-
-                foreach (var item in lis_Imgsanger)
+                finally
                 {
-                    /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                    var decoder = BitmapDecoder.Create(ms,
-                    BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+                    List<byte[]> lis_Imgfear = await response7.Content.ReadFromJsonAsync<List<byte[]>>();
 
-                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                    // Box1.Text += lis_Img._ImageId;
 
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                    IntPtr hBitmap = bmp.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                    // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                    // im.Source = WpfBitmap;
-                    arr_anger.Add(item);
+                    foreach (var item in lis_Imgfear)
+                    {
+                        /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
+                         var decoder = BitmapDecoder.Create(ms,
+                         BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
+                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+
+                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
+                         IntPtr hBitmap = bmp.GetHbitmap();
+                         System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
+                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
+                        // im.Source = WpfBitmap;
+                        arr_fear.Add(item);
+                    }
                 }
-            }
-            try
-            {
-                response4.EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                List<byte[]> lis_Imgssurprise = await response4.Content.ReadFromJsonAsync<List<byte[]>>();
-
-                // Box1.Text += lis_Img._ImageId;
-
-                foreach (var item in lis_Imgssurprise)
+                try
                 {
-                   /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                    var decoder = BitmapDecoder.Create(ms,
-                    BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                    IntPtr hBitmap = bmp.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                    // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                    // im.Source = WpfBitmap;
-                    arr_surprise.Add(item);
+                    response6.EnsureSuccessStatusCode();
                 }
-            }
-            try
-            {
-                response3.EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                List<byte[]> lis_Imgscontempt = await response3.Content.ReadFromJsonAsync<List<byte[]>>();
-
-                // Box1.Text += lis_Img._ImageId;
-
-                foreach (var item in lis_Imgscontempt)
+                catch (Exception ex)
                 {
-                   /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                    var decoder = BitmapDecoder.Create(ms,
-                    BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
 
-                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                    IntPtr hBitmap = bmp.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                    // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                    // im.Source = WpfBitmap;
-                    arr_contempt.Add(item);
                 }
-            }
-            try
-            {
-                response2.EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                List<byte[]> lis_Imgsadness = await response2.Content.ReadFromJsonAsync<List<byte[]>>();
-
-                // Box1.Text += lis_Img._ImageId;
-
-                foreach (var item in lis_Imgsadness)
+                finally
                 {
-                    /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                    var decoder = BitmapDecoder.Create(ms,
-                    BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+                    List<byte[]> lis_Imgdisgust = await response6.Content.ReadFromJsonAsync<List<byte[]>>();
 
-                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                    // Box1.Text += lis_Img._ImageId;
 
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                    IntPtr hBitmap = bmp.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                    // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                    // im.Source = WpfBitmap;
-                    arr_sadness.Add(item);
+                    foreach (var item in lis_Imgdisgust)
+                    {
+                        /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
+                         var decoder = BitmapDecoder.Create(ms,
+                         BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
+                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+
+                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
+                         IntPtr hBitmap = bmp.GetHbitmap();
+                         System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
+                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
+                        // im.Source = WpfBitmap;
+                        arr_disgust.Add(item);
+                    }
                 }
-            }
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
-            {
-               
-            }
-            finally
-            {
-                List<byte[]> lis_Imghappiness = await response.Content.ReadFromJsonAsync<List<byte[]>>();
-
-                // Box1.Text += lis_Img._ImageId;
-
-                foreach(var item in lis_Imghappiness)
+                try
                 {
-                    /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                    var decoder = BitmapDecoder.Create(ms,
-                    BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                    IntPtr hBitmap = bmp.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                   // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                   // im.Source = WpfBitmap;
-                    arr_happiness.Add(item);
+                    response5.EnsureSuccessStatusCode();
                 }
-            }
-            try
-            {
-                response1.EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                List<byte[]> lis_Imgneutral = await response1.Content.ReadFromJsonAsync<List<byte[]>>();
-                foreach (var item in lis_Imgneutral)
+                catch (Exception ex)
                 {
-                    /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                    var decoder = BitmapDecoder.Create(ms,
-                    BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
 
-                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                    IntPtr hBitmap = bmp.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                    // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                    // im.Source = WpfBitmap;
-                    arr_neutral.Add(item);
                 }
-            }
+                finally
+                {
+                    List<byte[]> lis_Imgsanger = await response5.Content.ReadFromJsonAsync<List<byte[]>>();
+
+                    // Box1.Text += lis_Img._ImageId;
+
+                    foreach (var item in lis_Imgsanger)
+                    {
+                        /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
+                        var decoder = BitmapDecoder.Create(ms,
+                        BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+
+                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
+                        IntPtr hBitmap = bmp.GetHbitmap();
+                        System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
+                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
+                        // im.Source = WpfBitmap;
+                        arr_anger.Add(item);
+                    }
+                }
+                try
+                {
+                    response4.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                finally
+                {
+                    List<byte[]> lis_Imgssurprise = await response4.Content.ReadFromJsonAsync<List<byte[]>>();
+
+                    // Box1.Text += lis_Img._ImageId;
+
+                    foreach (var item in lis_Imgssurprise)
+                    {
+                        /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
+                         var decoder = BitmapDecoder.Create(ms,
+                         BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
+                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+
+                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
+                         IntPtr hBitmap = bmp.GetHbitmap();
+                         System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
+                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
+                        // im.Source = WpfBitmap;
+                        arr_surprise.Add(item);
+                    }
+                }
+                try
+                {
+                    response3.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                finally
+                {
+                    List<byte[]> lis_Imgscontempt = await response3.Content.ReadFromJsonAsync<List<byte[]>>();
+
+                    // Box1.Text += lis_Img._ImageId;
+
+                    foreach (var item in lis_Imgscontempt)
+                    {
+                        /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
+                         var decoder = BitmapDecoder.Create(ms,
+                         BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
+                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+
+                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
+                         IntPtr hBitmap = bmp.GetHbitmap();
+                         System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
+                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
+                        // im.Source = WpfBitmap;
+                        arr_contempt.Add(item);
+                    }
+                }
+                try
+                {
+                    response2.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                finally
+                {
+                    List<byte[]> lis_Imgsadness = await response2.Content.ReadFromJsonAsync<List<byte[]>>();
+
+                    // Box1.Text += lis_Img._ImageId;
+
+                    foreach (var item in lis_Imgsadness)
+                    {
+                        /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
+                        var decoder = BitmapDecoder.Create(ms,
+                        BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+
+                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
+                        IntPtr hBitmap = bmp.GetHbitmap();
+                        System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
+                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
+                        // im.Source = WpfBitmap;
+                        arr_sadness.Add(item);
+                    }
+                }
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                finally
+                {
+                    List<byte[]> lis_Imghappiness = await response.Content.ReadFromJsonAsync<List<byte[]>>();
+
+                    // Box1.Text += lis_Img._ImageId;
+
+                    foreach (var item in lis_Imghappiness)
+                    {
+                        /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
+                        var decoder = BitmapDecoder.Create(ms,
+                        BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+
+                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
+                        IntPtr hBitmap = bmp.GetHbitmap();
+                        System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
+                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
+                        // im.Source = WpfBitmap;
+                        arr_happiness.Add(item);
+                    }
+                }
+                try
+                {
+                    response1.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                finally
+                {
+                    List<byte[]> lis_Imgneutral = await response1.Content.ReadFromJsonAsync<List<byte[]>>();
+                    foreach (var item in lis_Imgneutral)
+                    {
+                        /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
+                        var decoder = BitmapDecoder.Create(ms,
+                        BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+
+                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
+                        IntPtr hBitmap = bmp.GetHbitmap();
+                        System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
+                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
+                        // im.Source = WpfBitmap;
+                        arr_neutral.Add(item);
+                    }
+                }
+            });
         }
 
 
@@ -526,25 +522,17 @@ namespace WpfClient
                         list_View_disgust.ItemsSource = arr_disgust;
                         list_View_fear.ItemsSource = arr_fear;
                         list_View_contempt.ItemsSource = arr_contempt;
+                    await _asyncRetryPolicy.ExecuteAsync(async () =>
+                    {
                         var httpclient = new HttpClient();
                         httpclient.BaseAddress = new Uri("https://localhost:7285/");
                         httpclient.DefaultRequestHeaders.Accept.Clear();
                         httpclient.DefaultRequestHeaders.Accept.Add(
                         new MediaTypeWithQualityHeaderValue("application/json"));
                         HttpResponseMessage response = await httpclient.DeleteAsync("/api/Images/All");
-                        try
-                        {
-                            response.EnsureSuccessStatusCode();
-                        }
-                        catch (HttpRequestException HRex)
-                        {
-
-                        }
-                        finally
-                        {
-
-                        }
-
+                        response.EnsureSuccessStatusCode();
+                          
+                    });
                     }
                 }
            
