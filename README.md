@@ -153,11 +153,14 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
       Install-Package Microsoft.EntityFrameworkCore.Tools 
       ```
   * Create database  
-    - **First, need to change the path to create the database in the datacontext.cs file to the local folder path**
+    - **First, need to create the database in the datacontext.cs file**
         ```C#
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source=C:\\Users\\ydl74\\source\\repos\\Project3\\Project3\\ImageAnalysis.db");
+        => options.UseSqlite($"Data Source=ImageAnalysis.db");
         ```
+        In file properties(file.db) need to change the ``` Copt to output Directory ``` from  ```Do not copy``` to ```Copy aways ```  
+        
+        <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/Wechat_20221129123859.png" height=30% width=30% > 
     - **Then run the following commands in Package Manager Console (PMC)**
         ```shell
         Add-Migration InitialCreate
@@ -179,11 +182,15 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
      https://learn.microsoft.com/ru-ru/ef/core/get-started/overview/first-app?tabs=visual-studio
      
  * **How to get the hash code of byte[] type data**   
-<<<<<<< Updated upstream
      https://learn.microsoft.com/ru-ru/dotnet/api/system.object.gethashcode?view=net-6.0
 
 
- 
-=======
-     https://learn.microsoft.com/ru-ru/dotnet/api/system.object.gethashcode?view=net-6.0
->>>>>>> Stashed changes
+## Project4-Lab4 
+### **Introduction**
+The 4-th lab assignment for .Net in the 7-th semester. 
+* **Создание веб-API с помощью ASP.NET Core**    
+    https://learn.microsoft.com/ru-ru/aspnet/core/tutorials/first-web-api?view=aspnetcore-7.0&tabs=visual-studio
+    
+* **Generating HTTP API clients using dotnet tools and Visual Studio Connected Services**  
+    https://dotnetthoughts.net/generating-http-api-clients-using-dotnet-tools/
+
