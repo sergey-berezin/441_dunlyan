@@ -16,7 +16,7 @@
   - [Project4-Lab4](#project4-lab4)
     - [**Introduction**](#introduction-3)
     - [**References**](#references)
-# Lab .NET technology in 7th semester
+# Labs .NET technology in 7th semester
 
 
 ##  Project1-Lab1 
@@ -170,9 +170,9 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
         ```shell
         Update-Database
         ```
-       After generating the database file ```filename.db```, in file properties(file.db) need to change the ``` Copt to output Directory ``` from  ```Do not copy``` to ```Copy aways ```    
+       After generating the database file ```filename.db```, in file properties(file.db) need to change the ``` Copt to output Directory ``` from  ```Do not copy``` to ```Copy always ```    
         
-       <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/Wechat_20221129123859.png" height=30% width=30% > 
+       <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/Wechat_20221129123859.png" height=20% width=30% > 
 ####  **How to view tables in the database**
 * In **Visual Studio Code**  
   * Install plugin **SQLite** (v0.14.1)   
