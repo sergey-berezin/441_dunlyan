@@ -1,4 +1,4 @@
-- [Lab work .NET technology in 7th semester](#lab-work-net-technology-in-7th-semester)
+- [Labs .NET technology in 7th semester](#lab-net-technology-in-7th-semester)
   - [Project1-Lab1](#project1-lab1)
     - [**Introduction**](#introduction)
     - [**Usage**](#usage)
@@ -13,7 +13,10 @@
       - [**How to install the necessary plugins for this project**](#how-to-install-the-necessary-plugins-for-this-project)
       - [**How to view tables in the database**](#how-to-view-tables-in-the-database)
     - [**Program example and some references**](#program-example-and-some-references)
-# Lab work .NET technology in 7th semester
+  - [Project4-Lab4](#project4-lab4)
+    - [**Introduction**](#introduction-3)
+    - [**References**](#references)
+# Lab .NET technology in 7th semester
 
 
 ##  Project1-Lab1 
@@ -188,6 +191,7 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
 ## Project4-Lab4 
 ### **Introduction**
 The 4-th lab assignment for .Net in the 7-th semester. 
+### **References**
 * **Создание веб-API с помощью ASP.NET Core**    
     https://learn.microsoft.com/ru-ru/aspnet/core/tutorials/first-web-api?view=aspnetcore-7.0&tabs=visual-studio
     
