@@ -153,14 +153,12 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
       Install-Package Microsoft.EntityFrameworkCore.Tools 
       ```
   * Create database  
-    - **First, need to create the database in the datacontext.cs file**
+    - **First, need to specify the generated database file in the ```datacontext.cs``` file**
         ```C#
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite($"Data Source=ImageAnalysis.db");
         ```
-        In file properties(file.db) need to change the ``` Copt to output Directory ``` from  ```Do not copy``` to ```Copy aways ```  
         
-        <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/Wechat_20221129123859.png" height=30% width=30% > 
     - **Then run the following commands in Package Manager Console (PMC)**
         ```shell
         Add-Migration InitialCreate
@@ -169,7 +167,9 @@ Project-3 is a continuation of Project-2,added new functionality in project 3 to
         ```shell
         Update-Database
         ```
-    
+       After generating the database file ```filename.db```, in file properties(file.db) need to change the ``` Copt to output Directory ``` from  ```Do not copy``` to ```Copy aways ```    
+        
+       <img src="https://raw.githubusercontent.com/YUAN-DL/Images/master/Images/Wechat_20221129123859.png" height=30% width=30% > 
 ####  **How to view tables in the database**
 * In **Visual Studio Code**  
   * Install plugin **SQLite** (v0.14.1)   
