@@ -258,17 +258,7 @@ namespace WpfClient
 
                     foreach (var item in lis_Imgfear)
                     {
-                        /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                         var decoder = BitmapDecoder.Create(ms,
-                         BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                         IntPtr hBitmap = bmp.GetHbitmap();
-                         System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                        // im.Source = WpfBitmap;
+                       
                         arr_fear.Add(item);
                     }
                 }
@@ -288,17 +278,7 @@ namespace WpfClient
 
                     foreach (var item in lis_Imgdisgust)
                     {
-                        /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                         var decoder = BitmapDecoder.Create(ms,
-                         BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                         IntPtr hBitmap = bmp.GetHbitmap();
-                         System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                        // im.Source = WpfBitmap;
+                        
                         arr_disgust.Add(item);
                     }
                 }
@@ -318,17 +298,7 @@ namespace WpfClient
 
                     foreach (var item in lis_Imgsanger)
                     {
-                        /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                        var decoder = BitmapDecoder.Create(ms,
-                        BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                        IntPtr hBitmap = bmp.GetHbitmap();
-                        System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                        // im.Source = WpfBitmap;
+                        
                         arr_anger.Add(item);
                     }
                 }
@@ -348,17 +318,7 @@ namespace WpfClient
 
                     foreach (var item in lis_Imgssurprise)
                     {
-                        /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                         var decoder = BitmapDecoder.Create(ms,
-                         BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                         IntPtr hBitmap = bmp.GetHbitmap();
-                         System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                        // im.Source = WpfBitmap;
+                        
                         arr_surprise.Add(item);
                     }
                 }
@@ -378,17 +338,7 @@ namespace WpfClient
 
                     foreach (var item in lis_Imgscontempt)
                     {
-                        /* System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                         var decoder = BitmapDecoder.Create(ms,
-                         BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                         IntPtr hBitmap = bmp.GetHbitmap();
-                         System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                        // im.Source = WpfBitmap;
+                        
                         arr_contempt.Add(item);
                     }
                 }
@@ -408,17 +358,7 @@ namespace WpfClient
 
                     foreach (var item in lis_Imgsadness)
                     {
-                        /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                        var decoder = BitmapDecoder.Create(ms,
-                        BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                        IntPtr hBitmap = bmp.GetHbitmap();
-                        System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                        // im.Source = WpfBitmap;
+                        
                         arr_sadness.Add(item);
                     }
                 }
@@ -438,17 +378,7 @@ namespace WpfClient
 
                     foreach (var item in lis_Imghappiness)
                     {
-                        /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                        var decoder = BitmapDecoder.Create(ms,
-                        BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                        IntPtr hBitmap = bmp.GetHbitmap();
-                        System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                        // im.Source = WpfBitmap;
+                       
                         arr_happiness.Add(item);
                     }
                 }
@@ -465,17 +395,7 @@ namespace WpfClient
                     List<byte[]> lis_Imgneutral = await response1.Content.ReadFromJsonAsync<List<byte[]>>();
                     foreach (var item in lis_Imgneutral)
                     {
-                        /*System.IO.MemoryStream ms = new System.IO.MemoryStream(item);
-                        var decoder = BitmapDecoder.Create(ms,
-                        BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-
-                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(img);
-                        IntPtr hBitmap = bmp.GetHbitmap();
-                        System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());*/
-                        // System.Windows.Controls.Image im = new System.Windows.Controls.Image();
-                        // im.Source = WpfBitmap;
+                        
                         arr_neutral.Add(item);
                     }
                 }
