@@ -18,7 +18,7 @@ namespace EmotionFer_Plus{
                 modelStream.CopyTo(memoryStream);
             this.session = new InferenceSession(memoryStream.ToArray());
        }
-       public  async Task<List<(string, double)>> EmotionalAnalysisAsync(byte [] image,CancellationTokenSource cts)
+       public  async Task<List<(string, double)>> EmotionalAnalysisAsync(byte [] image,CancellationToken ct)
        {     
             List<(string,double)> result=new List<(string,double)>();
            
@@ -49,7 +49,7 @@ namespace EmotionFer_Plus{
                    result.Add(i);
                 }
                 return result;
-            },cts.Token,TaskCreationOptions.LongRunning,TaskScheduler.Default);
+            },ct,TaskCreationOptions.LongRunning,TaskScheduler.Default);
             return result;
        }
         public  DenseTensor<float> GrayscaleImageToTensor(Image<Rgb24> img)
