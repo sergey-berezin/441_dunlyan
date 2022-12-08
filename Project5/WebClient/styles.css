@@ -1,0 +1,60 @@
+.body {
+    padding: 10px;
+    display: flex;
+}
+.yuanButton {
+    font-size: 18px;
+    display: block;
+    font-weight: bold;
+    margin: 10px;
+    width: 200px;
+    height: 35px;
+}
+
+.grid_wrapper{
+    border: 3px solid yellow;
+    width: 1100px;
+    height: 400px;
+    overflow: auto; 
+}
+
+
+.grid{
+   
+    width: 1050px;
+    margin: 10px;
+    background-color: #eee;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-auto-rows: 200px;
+    grid-row-gap: 10px;
+    grid-column-gap: 10px;
+    align-items: center;
+    justify-items: center;
+}
+
+.item_wrapper {
+    border: 5px solid #6ce27a;
+}
+.item_wrapper:focus{
+    border: 5px solid #e26c6c;
+}
+
+.grid__item{
+ 
+    width: 150px;
+    display: inline-block;
+    padding: 10px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.emotions {
+    font-size: 18px;
+    text-align: center;
+    margin: 10px;
+    width: 300px;
+    height: 255px;
+    border: 3px solid rgb(255, 162, 0)
+}
