@@ -1,4 +1,3 @@
-
 (function init () {
     let elem = document.getElementById('file1')
     elem.addEventListener('change', file_upload)
@@ -78,12 +77,10 @@ async function display_emotions(e) {
     });
     
 }
-
 async function clear_Grid(e) {
     document.getElementById('grid').innerHTML = ''
     document.getElementById('emotions').innerHTML = ''
 }
-
 function button_File (event) {
     const file = document.getElementById('file1')
     file.click()

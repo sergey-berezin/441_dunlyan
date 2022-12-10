@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <title>Document</title>
     <link href="styles.css" rel="stylesheet"/>
-
 </head>
 <body>
     <div class="root">
         <div class="tabs">
-            <input type="button" class="yuanButton" value="All Images" style="background-color:aqua"> 
+            <input type="button" class="yuanButton" value="All Images" style="background-color:rgb(59, 245, 65)"> 
         </div>
         <div class="body">
+            <button onclick='clear_Grid(this)' >
+                 Clear Grid
+              </button >
             <div class="grid_wrapper">
                 <div id="grid" class="grid">
                     <div class="item_wrapper">
@@ -26,15 +28,11 @@
                 <input type="file" id="file1" multiple="true" style="display:none">
                 <input type="button" onclick='load_data(this)' class="yuanButton" value="Load Images"> 
                 <input type="button" onclick='button_File(this)' class="yuanButton" value="Post Images"> 
-                <input type="button" onclick='clear_Grid(this)' class="yuanButton" value="Clear Grid"> 
-                <div id="emotions" class="emotions">
-                    
+                <div id="emotions" class="emotions">      
                 </div>
             </div>
-
         </div>
     </div>
-
     <script src="main.js"> </script>
 </body>
 
