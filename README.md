@@ -197,4 +197,12 @@ The 4-th lab assignment for .Net in the 7-th semester.
     
 * **Generating HTTP API clients using dotnet tools and Visual Studio Connected Services**  
     https://dotnetthoughts.net/generating-http-api-clients-using-dotnet-tools/
-
+## Project5-Lab5
+### **Introduction**
+The 5-th lab assignment for .Net in the 7-th semester. 
+### **References**
+* **MDN Web Docs**  
+    https://developer.mozilla.org/en-US/
+* **Open-Source UI elements made with HTML and CSS**  
+    https://uiverse.io/
+ 
