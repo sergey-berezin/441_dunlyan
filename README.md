@@ -16,6 +16,9 @@
   - [Project4-Lab4](#project4-lab4)
     - [**Introduction**](#introduction-3)
     - [**References**](#references)
+  - [Project5-Lab5](#project5-lab5)
+    - [**Introduction**](#introduction-4)
+    - [**References**](#references)
 # Labs .NET technology in 7th semester
 
 
