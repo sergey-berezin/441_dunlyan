@@ -1,0 +1,125 @@
+.body {
+    padding: 10px;
+    display: flex;
+}
+.yuanButton {
+    padding: 1.3em 3em;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: #fff;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+}
+.yuanButton:hover {
+    background-color: #45f176;
+    box-shadow: 0px 15px 20px rgba(167, 222, 29, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+  }
+  
+  .yuanButton:active {
+    transform: translateY(-1px);
+  }
+
+.grid_wrapper{
+    border: 3px solid rgb(17, 225, 244);
+    width: 1100px;
+    height: 500px;
+    overflow: auto; 
+    margin: 15px 25px;
+}
+
+.grid{
+   
+    width: 1050px;
+    margin: 10px;
+    background-color: #eee;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-auto-rows: 200px;
+    grid-row-gap: 10px;
+    grid-column-gap: 10px;
+    align-items: center;
+    justify-items: center;
+}
+
+.item_wrapper {
+    border: 5px solid #bec9f6;
+}
+.item_wrapper:focus{
+    border: 5px solid #3b13ed;
+}
+
+.grid__item{
+ 
+    width: 150px;
+    display: inline-block;
+    padding: 10px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.emotions {
+    font-size: 18px;
+    text-align: center;
+    margin: 50px ;
+    width: 350px;
+    height: 205px;
+    border: 3px solid rgb(255, 162, 0)
+}
+button {
+    --glow-color: rgb(217, 176, 255);
+    --glow-spread-color: rgba(191, 123, 255, 0.781);
+    --enhanced-glow-color: rgb(231, 206, 255);
+    --btn-color: rgb(100, 61, 136);
+    border: .25em solid var(--glow-color);
+    padding: 1em 3em;
+    color: var(--glow-color);
+    font-size: 15px;
+    font-weight: bold;
+    background-color: var(--btn-color);
+    border-radius: 1em;
+    outline: none;
+    box-shadow: 0 0 1em .25em var(--glow-color),
+           0 0 4em 1em var(--glow-spread-color),
+           inset 0 0 .75em .25em var(--glow-color);
+    text-shadow: 0 0 .5em var(--glow-color);
+    position: relative;
+    transition: all 0.3s;
+   }
+   
+   button::after {
+    pointer-events: none;
+    content: "";
+    position: absolute;
+    top: 120%;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--glow-spread-color);
+    filter: blur(2em);
+    opacity: .7;
+    transform: perspective(1.5em) rotateX(35deg) scale(1, .6);
+   }
+   
+   button:hover {
+    color: var(--btn-color);
+    background-color: var(--glow-color);
+    box-shadow: 0 0 1em .25em var(--glow-color),
+           0 0 4em 2em var(--glow-spread-color),
+           inset 0 0 .75em .25em var(--glow-color);
+   }
+   
+   button:active {
+    box-shadow: 0 0 0.6em .25em var(--glow-color),
+           0 0 2.5em 2em var(--glow-spread-color),
+           inset 0 0 .5em .25em var(--glow-color);
+   }

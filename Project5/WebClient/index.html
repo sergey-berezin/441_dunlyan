@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link href="styles.css" rel="stylesheet"/>
+</head>
+<body>
+    <div class="root">
+        <div class="tabs">
+            <input type="button" class="yuanButton" value="All Images" style="background-color:rgb(59, 245, 65)"> 
+        </div>
+        <div class="body">
+            <button onclick='clear_Grid(this)' >
+                 Clear Grid
+              </button >
+            <div class="grid_wrapper">
+                <div id="grid" class="grid">
+                    <div class="item_wrapper">
+                        <img class="grid__item" src="" alt="">
+                    </div>
+                    <div class="item_wrapper">
+                        <img class="grid__item" src="" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <input type="file" id="file1" multiple="true" style="display:none">
+                <input type="button" onclick='load_data(this)' class="yuanButton" value="Load Images"> 
+                <input type="button" onclick='button_File(this)' class="yuanButton" value="Post Images"> 
+                <div id="emotions" class="emotions">      
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"> </script>
+</body>
+
+</html>
